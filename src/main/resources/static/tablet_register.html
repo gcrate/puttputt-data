@@ -1,0 +1,65 @@
+
+<!doctype html>
+
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <style>* {
+ font-family: Arial;
+}</style>
+</head>
+<body>
+    <div style="text-align: center">
+    <h1>Welcome to Gatlinburg!</h1>
+    </div>
+<div style="padding-left: 20%">
+    <div id="my_camera"></div>
+    <img style="display: none; width:800px; height:500px;" id="my_image"></img>
+
+    
+</div>
+    <div style="padding:15px; text-align: center"><img src="btn_register.png" onClick="take_snapshot()"/> <p>Take your picture to register and begin!</p></div>
+    
+<!--<script src="scriptws.js"></script>-->
+ 
+<script src="viewebcam.min.js"></script>
+<!--<script src="script.js"></script>-->
+ 
+<script language="JavaScript">
+		Webcam.set({
+			// live preview size
+			width: 800,
+			height: 600,
+			
+			// device capture size
+			dest_width: 320,
+			dest_height: 240,
+			
+			// final cropped size
+			crop_width: 320,
+			crop_height: 200,
+			image_format: 'jpeg',
+			jpeg_quality: 90
+		});
+		Webcam.attach( '#my_camera' );
+		function take_snapshot() {
+			// take snapshot and get image data
+			Webcam.snap( function(data_uri) {
+				// display results in page
+				$('#my_camera').hide();
+                                $("#my_image").attr("src",data_uri);
+                                $('#my_image').show();
+                                data = { image : data_uri };
+                                $.ajax({
+                                    type: "POST",
+                                    url: "http://192.168.1.50:8080/register",
+                                    data: JSON.stringify(data),
+                                    dataType: "text",
+                                    contentType: 'application/json',
+                                    success: function() { setTimeout(function() { window.location = 'tablet_ready.html'}, 1500) } 
+                                });
+			} );
+		}
+	</script>
+</body>
+</html>

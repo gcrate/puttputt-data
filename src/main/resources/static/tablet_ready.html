@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ready To Tee Off!</title>
+    <script src="sockjs-0.3.4.js"></script>
+    <script src="stomp.js"></script>
+    <script type="text/javascript">
+        var stompClient = null;
+        
+        function connect() {
+            var socket = new SockJS('/hello');
+            stompClient = Stomp.over(socket);            
+            stompClient.connect({}, function(frame) {
+                //setConnected(true);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/playerList', function(results){
+                    showResults(JSON.parse(results.body));
+                });
+            });
+        }
+        
+        
+        function showResults(message) {
+            alert(message.players.length) 
+        }
+    </script>
+</head>
+<body onload="connect()">
+<div>
+    <h1>Tee Off!</h1>
+</div>
+</body>
+</html>
