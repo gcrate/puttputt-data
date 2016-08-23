@@ -1,5 +1,6 @@
 package com.gcrate.puttputt;
 
+import com.gcrate.puttputt.entity.DataOnly;
 import com.gcrate.puttputt.entity.Player;
 import com.gcrate.puttputt.representations.PlayerList;
 import com.gcrate.puttputt.representations.Registration;
@@ -68,21 +69,18 @@ public class RestWebController {
   
     //get active players
     @RequestMapping(value="/players", method=RequestMethod.GET)
-    public List<Player> getPlayers() {
-        
-        return Application.activePlayers;     
+    public void getPlayers() {
+        smt.convertAndSend("/topic/playerList", new PlayerList(Application.activePlayers));
     }
     
     //get all data
     @RequestMapping(value="/data", method=RequestMethod.GET)
-    public List<Player> getData() {
-        List<Player> players = jdbcTemplate.query("Select * from players", (ResultSet result, int rowNum) -> {
-            Player player = new Player(result.getInt("id"),
-                    result.getString("image"), result.getDouble("speed"),
-                    result.getInt("angle"), result.getInt("score"));
-            return player;
+    public List<DataOnly> getData() {
+        List<DataOnly> data = jdbcTemplate.query("Select speed, angle, score from players", (ResultSet result, int rowNum) -> {
+            DataOnly datum = new DataOnly(result.getDouble("speed"), result.getInt("angle"), result.getInt("score"));
+            return datum;
         });
-        return players;     
+        return data;     
     }
 
 }

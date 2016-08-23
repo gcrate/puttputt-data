@@ -4,6 +4,7 @@
     <title>Ready To Tee Off!</title>
     <script src="sockjs-0.3.4.js"></script>
     <script src="stomp.js"></script>
+    <script src="jquery-3.1.0.min.js"></script>
     <script type="text/javascript">
         var stompClient = null;
         
@@ -17,17 +18,34 @@
                     showResults(JSON.parse(results.body));
                 });
             });
+            
         }
         
         
         function showResults(message) {
-            alert(message.players.length) 
+            var data = (message.players[message.players.length -1]);
+            $("#readyBody").html("<h1>You hit the ball at " + data.speed + "mph!</h1>" +
+            "<h1>..and at " + data.angle + " degrees!</h1>")
+            setTimeout(function() { window.location = 'tablet_register.html'}, 10000)
         }
     </script>
+    
+<style>
+    * {
+ font-family: Arial;
+}
+
+h1 {
+    font-size: 5em;
+}
+</style>
+
 </head>
 <body onload="connect()">
-<div>
-    <h1>Tee Off!</h1>
+<div id="readyBody" style="padding-top:50px; text-align: center">
+    
+    <h1>Now, Tee Off!</h1>
+    <img style="width: 25%" src="teeoff.gif" />
 </div>
 </body>
 </html>

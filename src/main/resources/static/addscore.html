@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Add Score</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="sockjs-0.3.4.js"></script>
+        <script src="stomp.js"></script>
+        <script src="jquery-3.1.0.min.js"></script>
+        <script type="text/javascript">
+            var stompClient = null;
+        
+            function connect() {
+                var socket = new SockJS('/hello');
+                stompClient = Stomp.over(socket);            
+                stompClient.connect({}, function(frame) {
+                    //setConnected(true);
+                    console.log('Connected: ' + frame);
+                    stompClient.subscribe('/topic/playerList', function(results){
+                        reloadPlayers(JSON.parse(results.body).players);
+                    });
+                });
+                setTimeout(function(){ $.get('/players')}, 1000);
+                
+            }
+            
+            function logScore(id, score) {
+                $.get('/score?id='+ id + "&score="+ score);
+                $("#player-" + id).html("<h1>Thanks for playing! Checkout the overall stats on the other laptop.. wherever we put it</h1>");
+                setTimeout(function() {$("#player-" + id).fadeOut()}, 3000);
+            }
+        
+        
+            function reloadPlayers(message) {
+                var body = "";
+                
+                for(i=0; i < message.length; i++) {
+                    body += 
+                        "<div id='player-" + message[i].id +"' class='player'><img src='" + message[i].image + "'/>"+ 
+                        "<div class='stats'>"+message[i].speed+"mph&nbsp;&nbsp;&nbsp;"+message[i].angle+"&deg;</div>" +
+                        "<br/>" +
+                            "<div class='sbtn' onClick='logScore(" + message[i].id + ",1)'>1</div>" +
+                            "<div class='sbtn' onClick='logScore(" + message[i].id + ",2)'>2</div>" +
+                            "<div class='sbtn' onClick='logScore(" + message[i].id + ",3)'>3</div>" +
+                            "<div class='sbtn' onClick='logScore(" + message[i].id + ",4)'>4</div>" +
+                            "<div class='sbtn' onClick='logScore(" + message[i].id + ",5)'>5</div>" +
+                            "<div class='sbtn' onClick='logScore(" + message[i].id + ",6)'>6+</div>" +
+                        "</div>";
+                }
+                
+                $("#users").html(body)
+            }
+        </script>
+        <style>
+            * {
+                font-family: Arial;
+                color: white;
+            }
+            
+            .player {
+                width:100%
+            }
+            
+            #users {
+                
+                text-align: center;
+            }
+            
+            #users img {
+                border-radius: 50px;
+                width:40%;
+                margin-top:20px
+            }
+            
+            #users .stats {
+                margin-bottom: 5px;
+            }
+            
+            .sbtn {
+                display: inline;
+                padding: 10px 22px 10px 22px;
+                font-size: 3em;
+                border-radius: 10px;
+                background-color: #880d0d;
+                margin: 10px 10px 40px 10px;
+            }
+        </style>    
+    </head>
+    <body onload="connect()" style="background-color: black">
+        <h1>Enter Score:</h1>
+        <div id="users"></div>
+    </body>
+</html>
