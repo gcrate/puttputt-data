@@ -6,6 +6,7 @@ import com.gcrate.puttputt.representations.PlayerList;
 import com.gcrate.puttputt.representations.Registration;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -83,4 +84,15 @@ public class RestWebController {
         return data;     
     }
 
+    @RequestMapping(value="/random", method=RequestMethod.GET)
+    public void loadRandomData() {
+        Random r = new Random();
+        for (int i = 0; i < 50; i++) {
+            jdbcTemplate.update("INSERT INTO players (id, image, speed, angle, score) VALUES (?, ?, ?, ?, ?)",
+                        Application.nextId++, "", Long.valueOf(r.nextInt(10) + ""), Long.valueOf(r.nextInt(90)+""), r.nextInt(10));
+        }
+     
+    }
+
+    
 }
