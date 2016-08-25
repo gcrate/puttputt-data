@@ -6,12 +6,20 @@
 <link rel="stylesheet" href="bootstrap.min.css" >
 <link rel="stylesheet" type="text/css" href="vis.min.css">
 <style type="text/css">
-	h1{
-		margin: auto;
-	}
-	#graph3D > div{
-		margin-left: 15%;
-	}
+  html, body {
+    background-color: #f2f2f2;
+
+  }
+  body {
+    padding-top: 10px;
+
+  }
+  h1{
+    margin: auto;
+    text-align: center;
+    font-size: 4em;
+  }
+
 </style>
 <!-- jquery -->
 <script src="jquery-3.1.0.min.js"></script>
@@ -22,7 +30,7 @@
 </head>
 <body>
 <div class="container">
-  <h1>STATS</h1>
+  <h1>STATISTICS</h1>
   <!--
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -30,36 +38,36 @@
     </div>
     <div class="panel-body">
       <div class="col-md-4">
-	      <div class="form-group">
-	        <label for="xAxis">X-axis:</label>
-	        <select class="form-control" id="xAxis">
-	          <option value="speed">speed</option>
-	          <option value="angle">angle</option>
-	          <option selected="selected" value="score">score</option>
-	        </select>
-	      </div>
+        <div class="form-group">
+          <label for="xAxis">X-axis:</label>
+          <select class="form-control" id="xAxis">
+            <option value="speed">speed</option>
+            <option value="angle">angle</option>
+            <option selected="selected" value="score">score</option>
+          </select>
+        </div>
       </div>
-	    <div class="col-md-4">
-		      <div class="form-group">
-		        <label for="yAxis">Y-axis:</label>
-		        <select class="form-control" id="yAxis">
-		          <option selected="selected" value="speed">speed</option>
-		          <option value="angle">angle</option>
-		          <option value="score">score</option>
-		        </select>
-		      </div>
-	    </div>
       <div class="col-md-4">
-	      <div class="form-group">
-	        <label for="zAxis">Z-axis:</label>
-	        <select class="form-control" id="zAxis">
-	          <option value="speed">speed</option>
-	          <option selected="selected" value="angle">angle</option>
-	          <option value="score">score</option>
-	        </select>
-	      </div>
-	      <br>
-	      <button id="btnResetAxis" class="btn btn-primary btn-sm" style="float: right;">Reset axis</button>
+          <div class="form-group">
+            <label for="yAxis">Y-axis:</label>
+            <select class="form-control" id="yAxis">
+              <option selected="selected" value="speed">speed</option>
+              <option value="angle">angle</option>
+              <option value="score">score</option>
+            </select>
+          </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="zAxis">Z-axis:</label>
+          <select class="form-control" id="zAxis">
+            <option value="speed">speed</option>
+            <option selected="selected" value="angle">angle</option>
+            <option value="score">score</option>
+          </select>
+        </div>
+        <br>
+        <button id="btnResetAxis" class="btn btn-primary btn-sm" style="float: right;">Reset axis</button>
       </div>
     </div>
   </div>
@@ -69,12 +77,16 @@
   </div>
 </div>
 
-<div class="container">
-	<div id="graph3D"></div>
+<div class="container" style="margin-top: 10%;">
+  <div class="col-md-6">
+    <div id="graph3D"></div>
+  </div>
+  <div class="col-md-6" style="margin-top: 5%;">
+    <canvas id="barChart"></canvas>
+  </div>
+  
 </div>
-<div class="container" style="width: 75%;">
-  <canvas id="barChart"></canvas>
-</div>
+
 
 <!--
 <div class="container">
@@ -114,6 +126,10 @@
   */
   $(document).ready(function(){
     var data = [];
+    var ctx = document.getElementById('barChart');
+    var myBarChart = null;
+
+
 
     $.ajax({
       url:'/data',
@@ -152,8 +168,6 @@
 
 
     function drawGraphs() {
-      console.log('data from api');
-      console.dir(data);
       var dataSetSSA = new vis.DataSet();
       for (var index in data) {
         var value = (Math.sin(index/50) * Math.cos(index/50) * 50 + 50);
@@ -168,12 +182,12 @@
 
       // specify options
       var options = {
-          width:  '700px',
-          height: '600px',
-          style: 'surface',
+          width:  '500px',
+          height: '400px',
+          style: 'dot-color',
           showPerspective: true,
           showGrid: true,
-          showShadow: false,
+          showShadow: true,
           keepAspectRatio: true,
           verticalRatio: 0.5,
           xLabel: "Score",
@@ -211,7 +225,7 @@
       }
       console.log(listScoresDist);
       var bcData = {
-        labels: ['1', '2', '3', '4', '5', '6'],
+        labels: ['1', '2', '3', '4', '5', '6+'],
         datasets: [
           {
             label: "Number of Players",
@@ -243,17 +257,34 @@
         },
         title: {
           display: true,
-          text: "Score Distribution"
+          text: "Score Distribution",
+          fontSize: 16
         }
       };
 
-      var ctx = document.getElementById('barChart');
-      console.dir(ctx);
-      var myBarChart = new Chart(ctx, {
-          type: "bar",
-          data: bcData,
-          options: bcOptions
-      });
+
+      
+      if (myBarChart === null) {
+        console.log('creat first time');
+        // create
+        myBarChart = new Chart(ctx, {
+            type: "bar",
+            data: bcData,
+            options: bcOptions
+        });
+      } else {
+        console.log('updating');
+        // destroy
+        myBarChart.destroy();
+        // create again
+        myBarChart = new Chart(ctx, {
+            type: "bar",
+            data: bcData,
+            options: bcOptions
+        });
+
+      }
+
 
     }
     
