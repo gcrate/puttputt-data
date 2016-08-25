@@ -73,6 +73,7 @@
             if(speed > 8) {
                 speed = Math.random() * (10 - 7) + 7;
             }
+			speed = Math.round(100 * speed) / 100; //round to 2 dp;
             $.get('/angle?angle=' + angle + '&speed=' + speed)
           }
 

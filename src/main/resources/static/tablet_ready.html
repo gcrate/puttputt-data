@@ -24,9 +24,17 @@
         
         function showResults(message) {
             var data = (message.players[message.players.length -1]);
+			var angle = data.angle;
+			var angleMessage;
+			if(angle < 0) {
+				angleMessage = -angle + "&deg; to the left";
+			} else {
+				angleMessage = angle + "&deg; to the right";
+			}
+			
             $("#readyBody").html("<h1>You hit the ball at " + data.speed + "mph!</h1>" +
-            "<h1>..and at " + data.angle + " degrees!</h1>")
-            setTimeout(function() { window.location = 'tablet_register.html'}, 10000)
+            "<h1>..and at " + angleMessage);
+            setTimeout(function() { window.location = 'tablet_register.html'}, 10000);
         }
     </script>
     
