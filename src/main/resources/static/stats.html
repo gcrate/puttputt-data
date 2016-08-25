@@ -129,7 +129,7 @@
     var ctx = document.getElementById('barChart');
     var myBarChart = null;
 
-
+    /*
 
     $.ajax({
       url:'/data',
@@ -165,6 +165,28 @@
         });
       }, 15000);
     })();
+
+    */
+
+    var data = [
+      {
+        "speed": 5.58,
+        "angle": -10,
+        "score": 3
+      },
+      {
+        "speed": 7.75,
+        "angle": -11,
+        "score": 3
+      },
+      {
+        "speed": 6.85,
+        "angle": -3,
+        "score": 3
+      }
+    ];
+
+    drawGraphs();
 
 
     function drawGraphs() {
@@ -218,11 +240,23 @@
         }
         
       }
+      console.dir(objScores);
 
       var listScoresDist = [];
+
+      for (var n = 1; n <= 6; n++) {
+        // if n is not a key of objScores, then fill in zero
+        if (!objScores.hasOwnProperty(n)) {
+          objScores[n] = 0;
+        }
+      }
+
+      // populate listScoresDist  
       for(var score in objScores){
         listScoresDist.push(objScores[score]);
       }
+
+      console.log('listScoresDist');
       console.log(listScoresDist);
       var bcData = {
         labels: ['1', '2', '3', '4', '5', '6+'],
@@ -259,6 +293,16 @@
           display: true,
           text: "Score Distribution",
           fontSize: 16
+        },
+        scales: {
+          yAxes: [
+            {
+              type: "linear",
+              ticks: {
+                stepSize: 1
+              }
+            }
+          ]
         }
       };
 
@@ -286,7 +330,15 @@
       }
 
 
-    }
+    } // end drawGraph
+
+    Object.size = function(obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
     
 
 
