@@ -89,7 +89,7 @@ public class RestWebController {
         Random r = new Random();
         for (int i = 0; i < 50; i++) {
             jdbcTemplate.update("INSERT INTO players (id, image, speed, angle, score) VALUES (?, ?, ?, ?, ?)",
-                        Application.nextId++, "", Long.valueOf(r.nextInt(10) + ""), Long.valueOf(r.nextInt(90)+""), r.nextInt(10));
+                        Application.nextId++, "", Long.valueOf(r.nextInt(10) + ""), Long.valueOf(r.nextInt(90)+""), r.nextInt(5) + 1);
         }
      
     }
