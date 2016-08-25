@@ -129,7 +129,7 @@
     var ctx = document.getElementById('barChart');
     var myBarChart = null;
 
-    /*
+    
 
     $.ajax({
       url:'/data',
@@ -165,29 +165,6 @@
         });
       }, 15000);
     })();
-
-    */
-
-    var data = [
-      {
-        "speed": 5.58,
-        "angle": -10,
-        "score": 3
-      },
-      {
-        "speed": 7.75,
-        "angle": -11,
-        "score": 3
-      },
-      {
-        "speed": 6.85,
-        "angle": -3,
-        "score": 3
-      }
-    ];
-
-    drawGraphs();
-
 
     function drawGraphs() {
       var dataSetSSA = new vis.DataSet();
