@@ -3,7 +3,7 @@
 
 <html lang="en">
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="jquery-3.1.0.min.js"></script>
     <style>* {
  font-family: Arial;
  color: white;
@@ -65,6 +65,7 @@ h1 {
                                 $.ajax({
                                     type: "POST",
                                     url: "http://192.168.1.50:8080/register",
+                                    //url: "http://10.0.0.2:8080/register",
                                     data: JSON.stringify(data),
                                     dataType: "text",
                                     contentType: 'application/json',

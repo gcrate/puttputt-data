@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>tracking.js - color with camera</title>
+  <!--<link rel="stylesheet" href="assets/demo.css">-->
+
+  <script src="tracking-min.js"></script>
+  <!--<script src="dat.gui.min.js"></script>-->
+  <!--<script src="assets/stats.min.js"></script>-->
+  <script src="color_camera_gui.js"></script>
+
+  <style>
+  video, canvas {
+    margin-left: 100px;
+    margin-top: 35px;
+    position: absolute;
+  }
+  </style>
+  <script src="jquery-3.1.0.min.js"></script>
+</head>
+<body>
+
+      <video style="" id="video" width="640" height="480" preload autoplay loop muted controls></video>
+
+  <script>
+    var distanceInInches = 27;
+    var InchPerSecToMphRatio = 0.0568182;
+
+    var hasBall = false;
+    var lastBall = {x:0, y:0};
+    var timeOfEntry = 0;
+    var entryData = {};
+    window.onload = function() {
+//      var video = document.getElementById('video');
+//      var canvas = document.getElementById('canvas');
+//      var context = canvas.getContext('2d');
+      tracking.ColorTracker.registerColor('notBlack', function(r, g, b) {
+        if (r > 50 || g > 50 || b > 50) {
+          return true;
+        }
+        return false;
+      });
+
+      tracking.ColorTracker.registerColor('lightColor', function(r, g, b) {
+        if (r > 235 && g > 235 && b > 235) {
+          return true;
+        }
+        return false;
+      });
+
+      tracking.ColorTracker.registerColor('notGreen', function(r, g, b) {
+        if (g < 100 && r > 90) {
+          return true;
+        }
+        return false;
+      });
+
+      var tracker = new tracking.ColorTracker(['lightColor']);
+
+      tracking.track('#video', tracker, { camera: true });
+
+      tracker.on('track', function(event) {
+        if(event.data.length === 0) {
+          if(hasBall) {
+            hasBall = false;
+            console.log('ball exited at ' + lastBall.x + ',' + lastBall.y)
+            var speed = calcSpeed(timeOfEntry, Date.now());
+            var angle = calcAngle(entryData.y, entryData.x, lastBall.y, lastBall.x);
+            if(!angle) {
+                angle = 0;
+            }
+            if(speed > 8) {
+                speed = Math.random() * (10 - 7) + 7;
+            }
+            $.get('/angle?angle=' + angle + '&speed=' + speed)
+          }
+
+        }
+        else {
+          if(!hasBall) {
+            hasBall = true;
+            console.log('ball entered at ' + event.data[0].x + ',' + event.data[0].y)
+            timeOfEntry = Date.now();
+            entryData = { x: event.data[0].x, y: event.data[0].y};
+          }
+          lastBall = event.data[0];
+        }
+      });
+
+     initGUIControllers(tracker);
+    };
+    function calcAngle(yIn, xIn, yOut, xOut ) {
+      var invert;
+      var xVal;
+      var yVal;
+      if(xIn > xOut) {
+        xVal = xIn - xOut;
+        invert = true;
+      } else {
+        xVal = xOut - xIn;
+        invert = false;
+      }
+      if(yIn > yOut) {
+        yVal = yIn - yOut;
+      } else {
+        yVal = yOut - yIn;
+      }
+      var angle = Math.atan((yOut-yIn)/xVal)*180/Math.PI;
+      if(angle < 1) {
+        angle = -angle
+      }
+      if(invert) {
+        //console.log("in invert. angle = " + angle)
+        return angle - 90;
+      } else {
+        return 90 - angle;
+      }
+
+    }
+
+    function calcSpeed(entryTime, exitTime) {
+      var elapsedInS = (exitTime - entryTime) * 0.001;
+      var inchPerSec = distanceInInches / elapsedInS;
+      return inchPerSec * InchPerSecToMphRatio;
+    }
+  </script>
+
+</body>
+</html>
